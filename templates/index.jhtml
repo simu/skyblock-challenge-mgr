@@ -15,11 +15,10 @@
 <form name="dummy" onchange="javascript:store()">
 <h2>Challenges:</h2>
 <ul>
-{% for i in range(50) %}
+{% for c in challenges %}
 <li>
-    <input type="checkbox" name="{{ i }}" id="cb{{ i }}"
-        {%if challenges[i].checked%}checked="checked"{%endif%} />
-    {{ i+1 }}) {{ challenges[i].desc }}
+    <input type="checkbox" name="{{ c.id }}" id="cb{{ c.id }}" {%if c.checked%}checked="checked"{%endif%} />
+    {{ c.id+1 }}) {{ c.desc }}
 </li>
 {% endfor %}
 </ul>

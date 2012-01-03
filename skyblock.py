@@ -43,15 +43,14 @@ class Challenge(object):
 
 
 skyblock = Flask(__name__)
-
-challenges = [None] * 50
+challenges=[]
 
 # read challenge descriptions
 def init_challenges():
     with open(pathjoin(WD, "challenges.txt")) as cfile:
         chtxts = map(str.strip, cfile.readlines())
-    for i in xrange(50):
-        challenges[i] = Challenge(i, chtxts[i], False)
+    for i in xrange(len(chtxts)):
+        challenges.append(Challenge(i, chtxts[i], False))
 
 def save_challenges():
     checked = [ c.id for c in challenges if c.checked ]
