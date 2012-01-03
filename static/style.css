@@ -1,12 +1,32 @@
 body {
-	font-family: sans-serif;
+    font-family: sans-serif;
+    background: url("bg-repeat.jpg");
+    background-repeat: repeat-x;
+    background-color: #c1c3ea;
+}
+#bgdiv {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    background: url("background.jpg");
+    background-repeat: no-repeat;
+}
+
+#content {
+    margin:10px;
+    padding-bottom:2em;
 }
 
 #responsediv {
-	display:none;
-	position:fixed;
-	top:10px;
-	border-radius:4px;
-	padding: 5px;
-	background-color: #ccccff;
+    display:none;
+    position:fixed;
+    top:10px;
+    width:10%;
+    left: 45%;
+    border-radius:4px;
+    padding: 5px;
+    background-color: #a75c33;
+    color: white;
+    text-align:center;
 }

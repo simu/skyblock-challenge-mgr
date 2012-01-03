@@ -8,6 +8,8 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
+<div id="bgdiv">
+<div id="content">
 <div id="responsediv"></div>
 <h1>{{ title }}</h1>
 <form name="dummy" onchange="javascript:store()">
@@ -22,4 +24,5 @@
 {% endfor %}
 </ul>
 </form>
+</div></div>
 </body></html>
