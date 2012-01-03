@@ -1,50 +1,50 @@
-Build a Cobble Stone generator.
-Build a house.
-Expand the island.
-Make a melon farm.
-Make a pumpkin farm.
-Make a reed/sugarcane farm.
-Make a wheat farm.
-Make a giant red mushroom.
-Craft a bed.
-Make 64 stone brick's.
-Make 20 torches.
-Make an infinite water source.
-Craft a furnace.
-Make a small lake.
-Build a platform 24 blocks away from the island, for mobs to spawn.
-Make 10 cactus green dye.
-Make 10 mushroom stew.
-Craft 10 Jack 'o' lanterns.
-Craft 10 bookcases.
-Make 10 bread.
-Collect 10 Ender-pearls.
-Cook 10 fish.
-Craft 10 Black Wool.
-Craft 10 Gray Wool.
-Craft 10 Light Gray Wool.
-Craft 10 Lime Green Wool.
-Craft 10 Red Wool.
-Craft 10 Yellow Wool.
-Craft 10 Pink Wool.
-Craft 10 Green Wool.
-Craft 10 Orange Wool.
-Craft 10 Snow Golems.
-Craft 20 Paintings.
-Build and light a nether portal.
-Craft 5 Gold Ingots.
-Craft 16 Glass Panes.
-Collect 50 birch logs.
-Collect 64 arrows and craft a bow.
-Craft 10 stone buttons.
-Craft 30 stone slabs.
-Craft 10 signs.
-Craft 20 ladders.
-Craft 20 fences.
-Craft 20 fence gates.
-Craft 10 levers.
-Craft 10 trapdoors.
-Craft 10 stone pressure plates.
-Craft 10 wooden pressure plates.
-Collect 64 bonemeal.
-Craft 20 cobblestone stairs
+Build a Cobble Stone generator.|1
+Build a house.|1
+Expand the island.|1
+Make a melon farm.|1
+Make a pumpkin farm.|1
+Make a reed/sugarcane farm.|1
+Make a wheat farm.|1
+Make a giant red mushroom.|1
+Craft a bed.|1
+Make 64 stone brick's.|64
+Make 20 torches.|20
+Make an infinite water source.|1
+Craft a furnace.|1
+Make a small lake.|1
+Build a platform 24 blocks away from the island, for mobs to spawn.|1
+Make 10 cactus green dye.|10
+Make 10 mushroom stew.|10
+Craft 10 Jack 'o' lanterns.|10
+Craft 10 bookcases.|10
+Make 10 bread.|10
+Collect 10 Ender-pearls.|10
+Cook 10 fish.|10
+Craft 10 Black Wool.|10
+Craft 10 Gray Wool.|10
+Craft 10 Light Gray Wool.|10
+Craft 10 Lime Green Wool.|10
+Craft 10 Red Wool.|10
+Craft 10 Yellow Wool.|10
+Craft 10 Pink Wool.|10
+Craft 10 Green Wool.|10
+Craft 10 Orange Wool.|10
+Craft 10 Snow Golems.|10
+Craft 20 Paintings.|10
+Build and light a nether portal.|1
+Craft 5 Gold Ingots.|5
+Craft 16 Glass Panes.|16
+Collect 50 birch logs.|50
+Collect 64 arrows and craft a bow.|64
+Craft 10 stone buttons.|10
+Craft 30 stone slabs.|30
+Craft 10 signs.|10
+Craft 20 ladders.|20
+Craft 20 fences.|20
+Craft 20 fence gates.|20
+Craft 10 levers.|11
+Craft 10 trapdoors.|10
+Craft 10 stone pressure plates.|10
+Craft 10 wooden pressure plates.|10
+Collect 64 bonemeal.|64
+Craft 20 cobblestone stairs|20

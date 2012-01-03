@@ -29,17 +29,26 @@ from os.path import join as pathjoin
 WD=abspath(dirname(__file__))
 
 class Challenge(object):
-    def __init__(self, id, desc, checked):
+    def __init__(self, id, desc, amount):
         self.id = id
         self.desc = desc
-        self.checked = checked
+        self.current_amount = 0
+        self.amount = amount
         pass
 
     def __str__(self):
         return str(self.id+1) + ") " + self.desc
 
     def __repr__(self):
-        return self.__str__() + " [" + str(self.checked) + "]"
+        return self.__str__() + " [" + str(self.completed) + "]" + "(" + str(self.current_amount) + "/" + str(self.amount) + ")" if self.has_amount else ""
+
+    @property
+    def completed(self):
+        return self.current_amount >= self.amount
+
+    @property
+    def has_amount(self):
+        return self.amount > 1
 
 
 skyblock = Flask(__name__)
@@ -50,21 +59,22 @@ def init_challenges():
     with open(pathjoin(WD, "challenges.txt")) as cfile:
         chtxts = map(str.strip, cfile.readlines())
     for i in xrange(len(chtxts)):
-        challenges.append(Challenge(i, chtxts[i], False))
+        text,amount = chtxts[i].split('|')
+        challenges.append(Challenge(i, text, int(amount)))
 
 def save_challenges():
-    checked = [ c.id for c in challenges if c.checked ]
+    data = [ c.current_amount for c in challenges ]
     with open(pathjoin(WD, "store.txt"), "w") as f:
-        pickle.dump(checked, f)
+        pickle.dump(data, f)
 
 def load_challenges():
     try:
         with open(pathjoin(WD, "store.txt")) as f:
-            checked = pickle.load(f)
+            data = pickle.load(f)
     except:
-        checked = []
-    for i in checked:
-        challenges[i].checked = True
+        data = [0] * len(challenges)
+    for c,v in zip(challenges, data):
+        c.current_amount = v
 
 @skyblock.route("/favicon.ico")
 def favicon():
@@ -72,7 +82,7 @@ def favicon():
 
 @skyblock.route("/")
 def index():
-    return render_template('index.jhtml', challenges=challenges, version="2.1", completed=len([c for c in challenges if c.checked ]), total=len(challenges))
+    return render_template('index.jhtml', challenges=challenges, version="2.1", completed=len([c for c in challenges if c.completed ]), total=len(challenges))
 
 @skyblock.route("/store.js")
 def storejs():
@@ -82,14 +92,11 @@ def storejs():
 def store():
     if request.method == "POST":
         try:
-            checked_boxes = map(int, request.data.split(',')[:-1])
-            checked_challenges = [ c.id for c in challenges if c.checked ]
-            to_check = [ i for i in checked_boxes if i not in checked_challenges ]
-            to_uncheck = [ i for i in checked_challenges if i not in checked_boxes ]
-            for i in to_check:
-                challenges[i].checked = True
-            for i in to_uncheck:
-                challenges[i].checked = False
+            data = map(int, request.data.split(',')[:-1])
+            if len(data) != len(challenges):
+                return "size mismatch"
+            for c,v in zip(challenges, data):
+                c.current_amount = v
 
             save_challenges()
 

@@ -17,8 +17,12 @@
 <ul>
 {% for c in challenges %}
 <li>
-    <input type="checkbox" name="{{ c.id }}" id="cb{{ c.id }}" {%if c.checked%}checked="checked"{%endif%} />
-    {{ c }}
+    {% if c.has_amount %}
+    <input type="text" class="amnt" name="{{ c.id }}" id="data{{ c.id }}" value="{{ c.current_amount }}" />/<b>{{ c.amount }}</b>
+    {% else %}
+    <input type="checkbox" name="{{ c.id }}" id="data{{ c.id }}" class="cb" {%if c.completed%}checked="checked"{%endif%} />
+    {% endif %}
+    <span {% if c.completed %}class="completed"{% endif %}>{{ c }}</span>
 </li>
 {% endfor %}
 </ul>

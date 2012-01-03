@@ -1,9 +1,15 @@
 function store() {
 	data = "";
 	for (i = 0; i < 50; i++) {
-		if($("#cb"+i).is(":checked")) {
-			data += i+",";
+		if($("#data"+i).is(":checkbox")) {
+			data += ($("#data"+i).is(":checked")?1:0) + ",";
 		}
+        else if($("#data"+i).is(":text")) {
+            data += $("#data"+i).val()+","
+        }
+        else {
+            data += "0,"
+        }
 	}
 	r = new XMLHttpRequest();
 	r.onreadystatechange=function(){
