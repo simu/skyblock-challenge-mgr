@@ -21,7 +21,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import sys
-sys.path.append('/var/www/skyblock')
+from os.path import abspath, dirname
+sys.path.append(abspath(dirname(__file__)))
 
 from skyblock import skyblock as application, init_challenges, load_challenges
 
