@@ -2,6 +2,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 import pickle
 
+from os.path import abspath, dirname
+from os.path import join as pathjoin
+WD=abspath(dirname(__file__))
+
 class Challenge(object):
     def __init__(self, id, desc, checked):
         self.id = id
@@ -22,19 +26,19 @@ challenges = [None] * 50
 
 # read challenge descriptions
 def init_challenges():
-    with open("challenges.txt") as cfile:
+    with open(pathjoin(WD, "challenges.txt")) as cfile:
         chtxts = map(str.strip, cfile.readlines())
     for i in xrange(50):
         challenges[i] = Challenge(i, chtxts[i], False)
 
 def save_challenges():
     checked = [ c.id for c in challenges if c.checked ]
-    with open("store.txt", "w") as f:
+    with open(pathjoin(WD, "store.txt"), "w") as f:
         pickle.dump(checked, f)
 
 def load_challenges():
     try:
-        with open("store.txt") as f:
+        with open(pathjoin(WD, "store.txt")) as f:
             checked = pickle.load(f)
     except:
         checked = []
