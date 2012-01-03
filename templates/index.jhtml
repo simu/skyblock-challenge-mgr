@@ -13,7 +13,7 @@
 <div id="responsediv"></div>
 <h1>{{ title }}</h1>
 <form name="dummy" onchange="javascript:store()">
-<h2>Challenges ({{ completed }}/{{ total }} completed):</h2>
+<h2>Challenges (<span id="completedcount">{{ completed }}</span>/{{ total }} completed):</h2>
 <ul>
 {% for c in challenges %}
 <li>

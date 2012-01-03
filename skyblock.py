@@ -104,6 +104,7 @@ def store():
 
             save_challenges()
 
+            fades.insert(0, str(len([ c for c in challenges if c.completed ])))
             fades.insert(0, "Saving succeeded")
             return ",".join(fades)
         except Exception, e:

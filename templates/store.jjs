@@ -16,8 +16,9 @@ function store() {
 		if(r.readyState==4 && r.status==200) {
 			elems = r.responseText.split(',');
 			$("#responsediv").html(elems[0]);
-			$("#responsediv").fadeIn().delay(1500).fadeOut()
-			if (elems.length > 1) {
+			$("#responsediv").fadeIn().delay(1500).fadeOut();
+			$("#completedcount").html(elems[1]);
+			if (elems.length > 2) {
 				for (i = 1; i < elems.length; i++) {
 					d = elems[i].split('=');
 					$("#text"+d[0]).animate({opacity:d[1]},1500)
