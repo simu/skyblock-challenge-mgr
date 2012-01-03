@@ -96,6 +96,11 @@ def store():
     else:
         return "Only accepts POST"
 
+def create_app():
+    init_challenges()
+    load_challenges()
+    return skyblock
+
 if __name__ == "__main__":
     init_challenges()
     load_challenges()

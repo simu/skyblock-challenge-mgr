@@ -22,10 +22,13 @@
 
 import sys
 from os.path import abspath, dirname
-sys.path.append(abspath(dirname(__file__)))
+path = abspath(dirname(__file__))
+if path not in sys.path:
+	sys.path.append(path)
 
-from skyblock import skyblock as application, init_challenges, load_challenges
-
-init_challenges()
-load_challenges()
+try:
+    from skyblock import create_app
+    application = create_app()
+except Exception as e:
+    raise
 
