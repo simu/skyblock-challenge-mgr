@@ -95,12 +95,17 @@ def store():
             data = map(int, request.data.split(',')[:-1])
             if len(data) != len(challenges):
                 return "size mismatch"
+            fades=[]
             for c,v in zip(challenges, data):
+                old_completed = c.completed
                 c.current_amount = v
+                if old_completed != c.completed:
+                    fades.append("%d=%.1f"%(c.id, 0.4 if c.completed else 1))
 
             save_challenges()
 
-            return "Saving succeeded"
+            fades.insert(0, "Saving succeeded")
+            return ",".join(fades)
         except Exception, e:
             print e
             return str(e)

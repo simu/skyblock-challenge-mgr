@@ -14,8 +14,15 @@ function store() {
 	r = new XMLHttpRequest();
 	r.onreadystatechange=function(){
 		if(r.readyState==4 && r.status==200) {
-			$("#responsediv").html(r.responseText);	
+			elems = r.responseText.split(',');
+			$("#responsediv").html(elems[0]);
 			$("#responsediv").fadeIn().delay(1500).fadeOut()
+			if (elems.length > 1) {
+				for (i = 1; i < elems.length; i++) {
+					d = elems[i].split('=');
+					$("#text"+d[0]).animate({opacity:d[1]},1500)
+				}
+			}
 		}
 	}
 	r.open("POST", "{{ url_for('store') }}", true);

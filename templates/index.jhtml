@@ -22,7 +22,7 @@
     {% else %}
     <input type="checkbox" name="{{ c.id }}" id="data{{ c.id }}" class="cb" {%if c.completed%}checked="checked"{%endif%} />
     {% endif %}
-    <span {% if c.completed %}class="completed"{% endif %}>{{ c }}</span>
+    <span id="text{{ c.id }}" {% if c.completed %}class="completed"{% endif %}>{{ c }}</span>
 </li>
 {% endfor %}
 </ul>

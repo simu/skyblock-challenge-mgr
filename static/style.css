@@ -41,5 +41,5 @@ body {
 }
 
 .completed {
-    color: #aaa;
+    opacity: 0.4;
 }
