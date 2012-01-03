@@ -54,8 +54,13 @@ def store():
     if request.method == "POST":
         try:
             checked_boxes = map(int, request.data.split(',')[:-1])
-            for i in checked_boxes:
+            checked_challenges = [ c.id for c in challenges if c.checked ]
+            to_check = [ i for i in checked_boxes if i in checked_challenges ]
+            to_uncheck = [ i for i in checked_challenges if i not in checked_boxes ]
+            for i in to_check:
                 challenges[i].checked = True
+            for i in to_uncheck:
+                challenges[i].checked = False
 
             save_challenges()
 
