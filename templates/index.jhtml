@@ -18,7 +18,7 @@
 {% for c in challenges %}
 <li>
     <input type="checkbox" name="{{ c.id }}" id="cb{{ c.id }}" {%if c.checked%}checked="checked"{%endif%} />
-    {{ c.id+1 }}) {{ c.desc }}
+    {{ c }}
 </li>
 {% endfor %}
 </ul>
