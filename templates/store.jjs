@@ -12,6 +12,6 @@ function store() {
 			$("#responsediv").fadeIn().delay(1500).fadeOut()
 		}
 	}
-	r.open("POST", "store", true);
+	r.open("POST", "{{ url_for('store') }}", true);
 	r.send(data)
 }

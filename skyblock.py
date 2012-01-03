@@ -74,6 +74,10 @@ def favicon():
 def index():
     return render_template('index.jhtml', challenges=challenges, version="2.1")
 
+@skyblock.route("/store.js")
+def storejs():
+    return render_template('store.jjs')
+
 @skyblock.route("/store", methods=['POST'])
 def store():
     if request.method == "POST":
