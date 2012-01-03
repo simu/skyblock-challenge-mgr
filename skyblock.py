@@ -106,6 +106,4 @@ def create_app():
     return skyblock
 
 if __name__ == "__main__":
-    init_challenges()
-    load_challenges()
-    skyblock.run(debug=True)
+    create_app().run(debug=True)
