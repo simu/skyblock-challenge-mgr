@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% set title = "SkyBlock Manager " + version %}
+<title>{{ title }}</title>
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.1.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='save.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+<div id="responsediv"></div>
+<h1>{{ title }}</h1>
+<form name="dummy" onchange="javascript:store()">
+<h2>Challenges:</h2>
+<ul>
+{% for i in range(50) %}
+<li>
+    <input type="checkbox" name="{{ i }}" id="cb{{ i }}"
+        {%if challenges[i].checked%}checked="checked"{%endif%} />
+    {{ i+1 }}) {{ challenges[i].desc }}
+</li>
+{% endfor %}
+</ul>
+</form>
+</body></html>
