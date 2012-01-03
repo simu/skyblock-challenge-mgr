@@ -72,7 +72,7 @@ def favicon():
 
 @skyblock.route("/")
 def index():
-    return render_template('index.jhtml', challenges=challenges, version="2.1")
+    return render_template('index.jhtml', challenges=challenges, version="2.1", completed=len([c for c in challenges if c.checked ]), total=len(challenges))
 
 @skyblock.route("/store.js")
 def storejs():
