@@ -24,6 +24,16 @@
 from flask import Flask, render_template, request, redirect, url_for
 import pickle
 
+skyblock = Flask(__name__)
+
+# make open_instance_resource Flask 0.7 compatible
+open_instance_resource = None
+if 'open_instance_resource' not in dir(skyblock):
+    from os.path import join
+    skyblock.open_instance_resource = lambda file, mode="rb": open(join("instance", file), mode)
+
+
+
 class Challenge(object):
     def __init__(self, id, desc, amount):
         self.id = id
@@ -47,9 +57,7 @@ class Challenge(object):
         return self.amount > 1
 
 
-skyblock = Flask(__name__)
 challenges=[]
-
 # read challenge descriptions
 def init_challenges():
     with skyblock.open_resource("challenges.txt") as cfile:
@@ -60,12 +68,12 @@ def init_challenges():
 
 def save_challenges():
     data = [ c.current_amount for c in challenges ]
-    with skyblock.open_resource("store.txt", "w") as f:
+    with skyblock.open_instance_resource("store.txt", "w") as f:
         pickle.dump(data, f)
 
 def load_challenges():
     try:
-        with skyblock.open_resource("store.txt") as f:
+        with skyblock.open_instance_resource("store.txt") as f:
             data = pickle.load(f)
     except:
         data = [0] * len(challenges)
