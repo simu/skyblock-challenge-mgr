@@ -19,7 +19,7 @@ function store() {
 			$("#responsediv").fadeIn().delay(1500).fadeOut();
 			$("#completedcount").html(elems[1]);
 			if (elems.length > 2) {
-				for (i = 1; i < elems.length; i++) {
+				for (i = 2; i < elems.length; i++) {
 					d = elems[i].split('=');
 					$("#text"+d[0]).animate({opacity:d[1]},1500)
 				}
