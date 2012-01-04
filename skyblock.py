@@ -29,8 +29,10 @@ skyblock = Flask(__name__)
 # make open_instance_resource Flask 0.7 compatible
 open_instance_resource = None
 if 'open_instance_resource' not in dir(skyblock):
-    from os.path import join
-    skyblock.open_instance_resource = lambda file, mode="rb": open(join("instance", file), mode)
+    from os.path import join, abspath, dirname
+    package = abspath(dirname(__file__))
+    skyblock.open_instance_resource = lambda file, mode="rb": \
+        open(join(package, "instance", file), mode)
 
 
 
