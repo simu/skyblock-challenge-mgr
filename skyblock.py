@@ -24,10 +24,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import pickle
 
-from os.path import abspath, dirname
-from os.path import join as pathjoin
-WD=abspath(dirname(__file__))
-
 class Challenge(object):
     def __init__(self, id, desc, amount):
         self.id = id
@@ -56,7 +52,7 @@ challenges=[]
 
 # read challenge descriptions
 def init_challenges():
-    with open(pathjoin(WD, "challenges.txt")) as cfile:
+    with skyblock.open_resource("challenges.txt") as cfile:
         chtxts = map(str.strip, cfile.readlines())
     for i in xrange(len(chtxts)):
         text,amount = chtxts[i].split('|')
@@ -64,12 +60,12 @@ def init_challenges():
 
 def save_challenges():
     data = [ c.current_amount for c in challenges ]
-    with open(pathjoin(WD, "store.txt"), "w") as f:
+    with skyblock.open_resource("store.txt", "w") as f:
         pickle.dump(data, f)
 
 def load_challenges():
     try:
-        with open(pathjoin(WD, "store.txt")) as f:
+        with skyblock.open_resource("store.txt") as f:
             data = pickle.load(f)
     except:
         data = [0] * len(challenges)
