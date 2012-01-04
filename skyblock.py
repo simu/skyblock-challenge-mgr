@@ -48,7 +48,8 @@ class Challenge(object):
         return str(self.id+1) + ") " + self.desc
 
     def __repr__(self):
-        return self.__str__() + " [" + str(self.completed) + "]" + "(" + str(self.current_amount) + "/" + str(self.amount) + ")" if self.has_amount else ""
+        return self.__str__() + " [" + str(self.completed) + "]" + "(" + \
+                str(self.current_amount) + "/" + str(self.amount) + ")" if self.has_amount else ""
 
     @property
     def completed(self):
@@ -88,7 +89,8 @@ def favicon():
 
 @skyblock.route("/")
 def index():
-    return render_template('index.jhtml', challenges=challenges, version="2.1", completed=len([c for c in challenges if c.completed ]), total=len(challenges))
+    return render_template('index.jhtml', challenges=challenges, version="2.1",
+                completed=len([c for c in challenges if c.completed ]), total=len(challenges))
 
 @skyblock.route("/store.js")
 def storejs():
