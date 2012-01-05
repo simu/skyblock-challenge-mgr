@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% set title = "SkyBlock Challenge Manager " + version + site %}
+<title>{{ title }}</title>
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.1.min.js') }}"></script>
+{% block js %}{% endblock %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+{% if error_msg is not sameas None %}
+<body onload="javascript:$('#responsediv').html('{{ error_msg }}').fadeIn().delay(1500).fadeOut()">
+{% else %}
+<body>
+{% endif %}
+<div id="bgdiv">
+<div id="content">
+<div id="responsediv"></div>
+<h1>{{ title }}</h1>
+<div id="nav">{% block nav %}{% endblock %}</div>
+{% block content %}{% endblock %}
+</div></div>
+</body></html>

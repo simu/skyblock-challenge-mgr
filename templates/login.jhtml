@@ -1,0 +1,15 @@
+{% extends "base.jhtml" %}
+
+{% set site = " &mdash; Login" %}
+
+{% block content %}
+<form name="loginform" action="{{ url_for("login") }}" method="POST">
+<table>
+<tr><td>Username:</td><td><input type="text" name="username" /></td></tr>
+<tr><td>Password:</td><td><input type="password" name="password" /></td></tr>
+<tr><td>Remember me?</td><td><input type="checkbox" name="remember" /></td></tr>
+<tr><td /><td><input class="navbutton" type="submit" value="Login" /></td></tr>
+</table>
+No account? <a href="{{ url_for("register") }}" style="color: black">Register now!</a>
+</form>
+{% endblock %}

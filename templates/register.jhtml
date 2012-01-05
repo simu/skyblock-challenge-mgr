@@ -1,0 +1,14 @@
+{% extends "base.jhtml" %}
+
+{% set site = " &mdash; Registration" %}
+
+{% block content %}
+<form name="registerform" action="{{ url_for("register") }}" method="POST">
+<table>
+<tr><td>Username:</td><td><input type="text" name="username" /></td></tr>
+<tr><td>Password:</td><td><input type="password" name="pw" /></td></tr>
+<tr><td>Retype Password:</td><td><input type="password" name="pw2" /></td></tr>
+<tr><td /><td><input class="navbutton" type="submit" value="Register" /></td></tr>
+</table>
+</form>
+{% endblock %}

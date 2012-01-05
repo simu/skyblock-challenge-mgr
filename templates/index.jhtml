@@ -1,17 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-{% set title = "SkyBlock Manager " + version %}
-<title>{{ title }}</title>
-<script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.1.min.js') }}"></script>
+{% extends "base.jhtml" %}
+
+{% set site = "" %}
+
+{% block js %}
 <script type="text/javascript" src="{{ url_for('storejs') }}"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
-</head>
-<body>
-<div id="bgdiv">
-<div id="content">
-<div id="responsediv"></div>
-<h1>{{ title }}</h1>
+{% endblock %}
+
+{% block nav %}
+{% if logged_in %}
+<a href="{{ url_for("logout") }}">Logout</a>
+{% else %}
+<a href="{{ url_for("login") }}">Login</a>&nbsp;<a href="{{ url_for("register") }}">Register</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if logged_in %}
 <form name="dummy" onchange="javascript:store()">
 <h2>Challenges (<span id="completedcount">{{ completed }}</span>/{{ total }} completed):</h2>
 <ul>
@@ -25,7 +29,9 @@
     <span id="text{{ c.id }}" {% if c.completed %}class="completed"{% endif %}>{{ c }}</span>
 </li>
 {% endfor %}
+{% else %}
+<h2> filler text</h2>
+{% endif %}
 </ul>
 </form>
-</div></div>
-</body></html>
+{% endblock %}

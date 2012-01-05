@@ -9,6 +9,7 @@ body {
     top:0;
     left:0;
     width:100%;
+    min-height: 800px;
     background: url("background.jpg");
     background-repeat: no-repeat;
 }
@@ -16,6 +17,32 @@ body {
 #content {
     margin:10px;
     padding-bottom:2em;
+}
+
+#nav {
+    position: absolute;
+    top: 2em;
+    right: 2em;
+}
+
+.navbutton {
+    border-style:none;
+}
+
+.navbutton, #nav a {
+    border-radius: 4px;
+    padding: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: #a75c33;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+
+.navbutton:hover, #nav a:hover {
+    color: #a75c33;
+    background-color: white;
 }
 
 #responsediv {
@@ -42,4 +69,8 @@ body {
 
 .completed {
     opacity: 0.4;
+}
+
+.center {
+    text-align: center
 }

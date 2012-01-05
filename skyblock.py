@@ -22,9 +22,25 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from flask import Flask, render_template, request, redirect, url_for
+from flaskext.login import LoginManager, login_user, logout_user, AnonymousUser
+from user import load_users, save_users, User
 import pickle
 
+# skyblock version
+version="2.1"
+
 skyblock = Flask(__name__)
+skyblock.secret_key = "seeeecret"
+skyblock.error_msg = None
+anoynmous = AnonymousUser()
+skyblock.current_user = anoynmous
+login_mgr = LoginManager()
+login_mgr.setup_app(skyblock)
+
+# setup user loader for login manager
+@login_mgr.user_loader
+def load_user(userid):
+    User.get(skyblock.users, userid)
 
 # make open_instance_resource Flask 0.7 compatible
 open_instance_resource = None
@@ -89,8 +105,9 @@ def favicon():
 
 @skyblock.route("/")
 def index():
-    return render_template('index.jhtml', challenges=challenges, version="2.1",
-                completed=len([c for c in challenges if c.completed ]), total=len(challenges))
+    return render_template('index.jhtml', challenges=challenges, version=version,
+                completed=len([c for c in challenges if c.completed ]), total=len(challenges),
+                error_msg=None, logged_in=skyblock.current_user.is_authenticated())
 
 @skyblock.route("/store.js")
 def storejs():
@@ -121,9 +138,69 @@ def store():
     else:
         return "Only accepts POST"
 
+@skyblock.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == "POST": # process login form
+        skyblock.error_msg = None
+        import sha
+        user = skyblock.users.get(request.form.get('username'), None)
+        print skyblock.users
+        if user is None:
+            skyblock.error_msg = "No such user"
+            return redirect(url_for("login"))
+        password = request.form.get('password')
+        pwhash = sha.new(password).hexdigest()
+        if user.password != pwhash:
+            skyblock.error_msg = "Wrong password"
+            return redirect(url_for("login"))
+        #remember = request.form.get('remember', False)
+        remember = False
+        if not login_user(user, remember):
+            skyblock.error_msg = "login failed"
+            return redirect(url_for("login"))
+        skyblock.current_user = user
+        return redirect(url_for("index"))
+    else:
+        error_msg = skyblock.error_msg
+        skyblock.error_msg = None
+        return render_template('login.jhtml',version=version,  error_msg=error_msg)
+
+@skyblock.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == "POST": # process registration form
+        import sha
+        if request.form.get('pw') != request.form.get('pw2'):
+            skyblock.error_msg = "Password mismatch"
+            skyblock.form = request.form
+            return redirect(url_for("register"))
+        print skyblock.users
+        user = User.register(skyblock.users, request.form.get('username'), sha.new(request.form.get('pw')).hexdigest())
+        print user
+        if user is None:
+            skyblock.error_msg = "Username exists already"
+            skyblock.form = request.form
+            return redirect(url_for("register"))
+        save_users(skyblock)
+        if not login_user(user):
+            skyblock.error_msg = "login failed"
+            return redirect(url_for("login"))
+        skyblock.current_user = user
+        return redirect(url_for("index"))
+    else:
+        error_msg = skyblock.error_msg
+        skyblock.error_msg = None
+        return render_template('register.jhtml', version=version, error_msg=error_msg)
+
+@skyblock.route("/logout")
+def logout():
+    logout_user()
+    skyblock.current_user = anoynmous
+    return redirect(url_for("index"))
+
 def create_app():
     init_challenges()
-    load_challenges()
+    #load_challenges()
+    load_users(skyblock)
     return skyblock
 
 if __name__ == "__main__":
