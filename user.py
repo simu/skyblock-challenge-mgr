@@ -45,10 +45,11 @@ class User(UserMixin, ComparableMixin):
 def load_users(app):
     try:
         with app.open_instance_resource("users.txt") as u:
-            users = map(User, pickle.load(u))
-            app.users = dict(zip([ x.name for x in users ], users))
+            users = pickle.load(u)
+            app.users = dict( [ (name, User(name, password)) for (name, password) in users ] )
             print app.users
-    except:
+    except Exception as e:
+        print e
         app.users = dict()
 
 def save_users(app):
