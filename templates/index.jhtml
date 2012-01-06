@@ -38,7 +38,7 @@ Logged in as <span class="emph" id="username">{{ session.user.name }}</span><a h
 <a href="http://www.minecraftforum.net/topic/600254-surv-skyblock/">GitHub</a>
 <h2>Changelog</h2>
 <ul>
-{% include "changelog.html" %}
+{% include "changelog.jhtml" %}
 </ul>
 {% endif %}
 </ul>

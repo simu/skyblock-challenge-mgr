@@ -57,7 +57,7 @@ def index():
             ch = load_challenges(skyblock, user)
     else:
         ch = None
-    return render_template('index.jhtml', version=version, challenges=ch)
+    return render_template('index.jhtml', version=version, challenges=ch, changelog=changelog)
 
 @skyblock.route("/store.js")
 def storejs():
@@ -140,14 +140,15 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for("index"))
 
+@skyblock.template_filter("shortcid")
+def shortcid(s):
+    return s[:8]
+
 def changelog():
+    global changelog
     import subprocess
     log=subprocess.check_output([ "git", "log", "--pretty=oneline", "-n", "5" ]).split('\n')
-    log=[ e.split(' ', 1) for e in log ]
-    with open("templates/changelog.html", "w") as f:
-        for line in log[:-1]:
-            print line
-            print >>f, '<li class="changelog">%s&nbsp[<a href="http://github.com/simu/skyblock-challenge-mgr/commit/%s">%s</a>]</li>' % (line[1], line[0], line[0][:8])
+    changelog=[ (x[0],x[1]) for x in [ e.split(' ', 1) for e in log[:-1] ] ]
 
 def create_app():
     changelog()

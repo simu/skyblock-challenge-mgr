@@ -1,0 +1,3 @@
+{% for cid, cmsg in changelog %}
+<li class="changelog">{{ cmsg }}&nbsp;[<a href="http://github.com/simu/skyblock-challenge-mgr/commit/{{ cid }}">{{ cid|shortcid }}</a>]</li>
+{% endfor %}
