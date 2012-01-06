@@ -147,8 +147,9 @@ def shortcid(s):
 def changelog():
     global changelog
     import subprocess
-    log=subprocess.Popen([ "git", "log", "--pretty=oneline", "-n", "5" ],
-            stdout=subprocess.PIPE).communicate()[0].split('\n')
+    from os.path import abspath, dirname
+    gitdir = abspath(dirname(__file__))
+    log=subprocess.Popen([ "git", "log", "--pretty=oneline", "-n", "5" ], cwd=gitdir, stdout=subprocess.PIPE).communicate()[0].split('\n')
     changelog=[ (x[0],x[1]) for x in [ e.split(' ', 1) for e in log[:-1] ] ]
 
 def create_app():
