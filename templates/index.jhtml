@@ -32,7 +32,14 @@ Logged in as <span class="emph" id="username">{{ session.user.name }}</span><a h
 {% endfor %}
 {% endif %}
 {% else %}
-<h2> filler text</h2>
+<h2>Get the Minecraft Map</h2>
+<a href="http://www.minecraftforum.net/topic/600254-surv-skyblock/">To the thread (minecraftforums)</a>
+<h2>Get the code</h2>
+<a href="http://www.minecraftforum.net/topic/600254-surv-skyblock/">GitHub</a>
+<h2>Changelog</h2>
+<ul>
+{% include "changelog.html" %}
+</ul>
 {% endif %}
 </ul>
 </form>

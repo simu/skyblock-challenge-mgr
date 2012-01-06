@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-{% set title = "SkyBlock Challenge Manager " + version + site %}
+{% set title = "SkyBlock" + version + " Challenge Manager " + site %}
 {% set messages = get_flashed_messages() %}
 <title>{{ title }}</title>
 <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.1.min.js') }}"></script>
