@@ -140,7 +140,17 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for("index"))
 
+def changelog():
+    import subprocess
+    log=subprocess.check_output([ "git", "log", "--pretty=oneline", "-n", "5" ]).split('\n')
+    log=[ e.split(' ', 1) for e in log ]
+    with open("templates/changelog.html", "w") as f:
+        for line in log[:-1]:
+            print line
+            print >>f, '<li class="changelog">%s&nbsp[<a href="http://github.com/simu/skyblock-challenge-mgr/commit/%s">%s</a>]</li>' % (line[1], line[0], line[0][:8])
+
 def create_app():
+    changelog()
     load_users(skyblock)
     return skyblock
 

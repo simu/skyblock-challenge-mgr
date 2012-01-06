@@ -82,3 +82,10 @@ body {
 #username {
     margin-right:1em;
 }
+
+.changelog {
+    margin-bottom:0.2em;
+}
+.changelog a {
+    font-family: monospace;
+}
