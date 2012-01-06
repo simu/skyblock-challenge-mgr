@@ -21,7 +21,7 @@ function store() {
 			if (elems.length > 2) {
 				for (i = 2; i < elems.length; i++) {
 					d = elems[i].split('=');
-					$("#text"+d[0]).animate({opacity:d[1]},1500)
+					$("#item"+d[0]).animate({opacity:d[1]},1500)
 				}
 			}
 		}

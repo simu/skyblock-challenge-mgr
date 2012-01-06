@@ -21,13 +21,13 @@ Logged in as <span class="emph" id="username">{{ session.user.name }}</span><a h
 <ul>
 {% if challenges %}
 {% for c in challenges.challenges %}
-<li>
+<li id="item{{ c.id }}" {% if c.completed %}class="completed"{% endif %}>
     {% if c.has_amount %}
     <input type="text" class="amnt" name="{{ c.id }}" id="data{{ c.id }}" value="{{ c.current_amount }}" />/<b>{{ c.amount }}</b>
     {% else %}
-    <input type="checkbox" name="{{ c.id }}" id="data{{ c.id }}" class="cb" {%if c.completed%}checked="checked"{%endif%} />
+    <input type="checkbox" name="{{ c.id }}" id="data{{ c.id }}" class="cb" {%if c.completed %}checked="checked"{% endif %} />
     {% endif %}
-    <span id="text{{ c.id }}" {% if c.completed %}class="completed"{% endif %}>{{ c }}</span>
+    {{ c }}
 </li>
 {% endfor %}
 {% endif %}
