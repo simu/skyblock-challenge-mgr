@@ -95,14 +95,14 @@ def login_successful(user, target="index"):
 @skyblock.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST": # process login form
-        import sha
+        import hashlib
         user = skyblock.users.get(request.form.get('username'), None)
         remember = request.form.get('remember', False)
         if remember is not False:
             remember = True
         password = request.form.get('password')
         if user is not None:
-            user.auth_ok = sha.new(password).hexdigest() == user.password
+            user.auth_ok =hashlib.sha1(password).hexdigest() == user.password
         if user is None:
             flash("No such user")
         elif not login_user(user, False):
@@ -114,12 +114,12 @@ def login():
 @skyblock.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == "POST": # process registration form
-        import sha
+        import hashlib
         if request.form.get('pw') != request.form.get('pw2'):
             flash("Password mismatch")
             skyblock.form = request.form
             return redirect(url_for("register"))
-        user = User.register(skyblock.users, request.form.get('username'), sha.new(request.form.get('pw')).hexdigest())
+        user = User.register(skyblock.users, request.form.get('username'), hashlib.sha1(request.form.get('pw')).hexdigest())
         if user is None:
             flash("Username exists already")
             skyblock.form = request.form
