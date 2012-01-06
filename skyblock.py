@@ -21,11 +21,12 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flaskext.login import LoginManager, login_user, logout_user, AnonymousUser, login_required
 from user import load_users, save_users, User
 from challenges import load_challenges, get_challenges
 from preferences import load_preferences
+from util import update_session, login_successful, changelog
 
 # skyblock version
 version="2.1"
@@ -87,11 +88,6 @@ def store():
     else:
         return "Only accepts POST"
 
-def update_session(msg):
-    r = make_response(msg)
-    skyblock.save_session(session, r)
-    return r
-
 @login_required
 @skyblock.route("/updateprefs", methods=['POST'])
 def updateprefs():
@@ -102,18 +98,9 @@ def updateprefs():
         with skyblock.open_instance_resource(session['user'].prefs_file, "w") as f:
             session['prefs'].save(f)
         session.modified = True
-        return update_session("Preferences updated successfully")
+        return update_session(skyblock, "Preferences updated successfully")
     else:
         return "only POST"
-
-def login_successful(user, target="index"):
-    session['user'] = user
-    session['logged_in'] = True
-    session['prefs'] = load_preferences(skyblock, user)
-    flash("Login successful")
-    return redirect(url_for(target))
-
-
 
 @skyblock.route("/login", methods=['GET', 'POST'])
 def login():
@@ -131,7 +118,7 @@ def login():
         elif not login_user(user, False):
             flash("login failed")
         else:
-            return login_successful(user)
+            return login_successful(skyblock, user)
     return render_template('login.jhtml',version=version)
 
 @skyblock.route("/register", methods=['GET', 'POST'])
@@ -151,7 +138,7 @@ def register():
         if not login_user(user):
             flash("login failed")
             return redirect(url_for("register"))
-        return login_successful(user)
+        return login_successful(skyblock, user)
     else:
         return render_template('register.jhtml', version=version)
 
@@ -170,14 +157,6 @@ def shortcid(s):
 @skyblock.template_filter("tolower")
 def tolower(s):
     return str(s).lower()
-
-def changelog():
-    global changelog
-    import subprocess
-    from os.path import abspath, dirname
-    gitdir = abspath(dirname(__file__))
-    log=subprocess.Popen([ "git", "log", "--pretty=oneline", "-n", "5" ], cwd=gitdir, stdout=subprocess.PIPE).communicate()[0].split('\n')
-    changelog=[ (x[0],x[1]) for x in [ e.split(' ', 1) for e in log[:-1] ] ]
 
 def create_app():
     changelog()
