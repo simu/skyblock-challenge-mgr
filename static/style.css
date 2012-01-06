@@ -74,3 +74,11 @@ body {
 .center {
     text-align: center
 }
+
+.emph {
+    font-weight:bold;
+}
+
+#username {
+    margin-right:1em;
+}
