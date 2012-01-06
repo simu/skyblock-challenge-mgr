@@ -25,6 +25,16 @@ body {
     right: 2em;
 }
 
+#prefwindow {
+    position: absolute;
+    width: 20em;
+    top: 4em;
+    right: 2em;
+    background-color: white;
+    border-radius: 4px;
+    padding: 3px;
+}
+
 .navbutton {
     border-style:none;
 }
@@ -89,3 +99,4 @@ body {
 .changelog a {
     font-family: monospace;
 }
+

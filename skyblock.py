@@ -21,10 +21,11 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
 from flaskext.login import LoginManager, login_user, logout_user, AnonymousUser, login_required
 from user import load_users, save_users, User
 from challenges import load_challenges, get_challenges
+from preferences import load_preferences
 
 # skyblock version
 version="2.1"
@@ -55,13 +56,16 @@ def index():
         ch = get_challenges(user)
         if ch is None:
             ch = load_challenges(skyblock, user)
+        if 'prefs' not in session:
+            session['prefs'] = load_preferences(skyblock, user)
     else:
         ch = None
+    print session
     return render_template('index.jhtml', version=version, challenges=ch, changelog=changelog)
 
-@skyblock.route("/store.js")
-def storejs():
-    return render_template('store.jjs')
+@skyblock.route("/ajax.js")
+def ajaxjs():
+    return render_template('ajax.jjs')
 
 @login_required
 @skyblock.route("/store", methods=['POST'])
@@ -83,10 +87,29 @@ def store():
     else:
         return "Only accepts POST"
 
+def update_session(msg):
+    r = make_response(msg)
+    skyblock.save_session(session, r)
+    return r
+
+@login_required
+@skyblock.route("/updateprefs", methods=['POST'])
+def updateprefs():
+    if request.method == "POST":
+        print request.data
+        session['prefs'].hide_completed = request.data=="1"
+        print session['prefs'].hide_completed
+        with skyblock.open_instance_resource(session['user'].prefs_file, "w") as f:
+            session['prefs'].save(f)
+        session.modified = True
+        return update_session("Preferences updated successfully")
+    else:
+        return "only POST"
+
 def login_successful(user, target="index"):
     session['user'] = user
-    session['challenges'] = load_challenges(skyblock, user)
     session['logged_in'] = True
+    session['prefs'] = load_preferences(skyblock, user)
     flash("Login successful")
     return redirect(url_for(target))
 
@@ -143,6 +166,10 @@ def logout():
 @skyblock.template_filter("shortcid")
 def shortcid(s):
     return s[:8]
+
+@skyblock.template_filter("tolower")
+def tolower(s):
+    return str(s).lower()
 
 def changelog():
     global changelog

@@ -1,0 +1,4 @@
+<!--<a style="float:right" href="#" onclick="javascript:close_prefs()">Close</a>-->
+<form name="prefsform" onchange="javascript:save_prefs()">
+<input type="checkbox" id="prefs_hide_completed" {% if hide_completed %}checked="checked"{% endif %} /> Hide completed challenges
+</form>

@@ -40,6 +40,10 @@ class User(UserMixin, ComparableMixin):
     def challenge_file(self):
         return "store-" + self.name + ".txt"
 
+    @property
+    def prefs_file(self):
+        return "prefs-" + self.name + ".txt"
+
     @classmethod
     def get(klass, users, userid):
         return users[userid]

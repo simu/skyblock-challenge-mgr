@@ -1,14 +1,17 @@
 {% extends "base.jhtml" %}
 
 {% set site = "" %}
+{% set hide_completed = session['prefs'].hide_completed %}
 
 {% block js %}
-<script type="text/javascript" src="{{ url_for('storejs') }}"></script>
+<script type="text/javascript" src="{{ url_for('ajaxjs') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename="ui.js") }}"></script>
 {% endblock %}
 
 {% block nav %}
 {% if session.logged_in %}
-Logged in as <span class="emph" id="username">{{ session.user.name }}</span><a href="{{ url_for("logout") }}">Logout</a>
+Logged in as <span class="emph" id="username">{{ session.user.name }}</span>
+<a href="#" onclick="javascript:toggle_prefs()">Preferences</a>&nbsp;<a href="{{ url_for("logout") }}">Logout</a>
 {% else %}
 <a href="{{ url_for("login") }}">Login</a>&nbsp;<a href="{{ url_for("register") }}">Register</a>
 {% endif %}
@@ -16,13 +19,17 @@ Logged in as <span class="emph" id="username">{{ session.user.name }}</span><a h
 
 {% block content %}
 {% if session.logged_in %}
-<form name="dummy" onchange="javascript:store()">
+<div style="display:none" id="prefwindow">{% include "preferences.jhtml" %}</div>
 <h2>Challenges (<span id="completedcount">{{ challenges.completed }}</span>/{{ challenges.count }} completed):</h2>
-<a href="#" data-hidden="false" id="hidecompleted" class="navbutton" onclick="javascript:toggle_hide_completed()">Hide completed challenges</a>
+<a href="#" data-hidden="{{ hide_completed|lower }}" id="hidecompleted"
+   class="navbutton" onclick="javascript:toggle_hide_completed()">
+   {% if hide_completed %}Unh{%else%}H{%endif%}ide completed challenges</a>
+<form name="dummy" onchange="javascript:store()">
 <ul>
 {% if challenges %}
 {% for c in challenges.challenges %}
-<li id="item{{ c.id }}" {% if c.completed %}class="completed"{% endif %}>
+<li id="item{{ c.id }}" {% if session['prefs'].hide_completed and c.completed %}style="display:none"{%endif%}
+{% if c.completed %}class="completed"{% endif %}>
     {% if c.has_amount %}
     <input type="text" class="amnt" name="{{ c.id }}" id="data{{ c.id }}" value="{{ c.current_amount }}" />/<b>{{ c.amount }}</b>
     {% else %}

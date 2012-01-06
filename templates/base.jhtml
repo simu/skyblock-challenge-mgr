@@ -10,7 +10,7 @@
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 {% if messages %}
-<body onload="javascript:$('#responsediv').html('{% for m in messages %}{{ m }}<br />{% endfor %}').fadeIn().delay(1500).fadeOut()">
+<body onload="javascript:$('#responsediv').html('{% for m in messages %}{{ m }}<br />{% endfor %}').fadeIn().delay(1500).fadeOut(); update_session_button()">
 {% else %}
 <body>
 {% endif %}
