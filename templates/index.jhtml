@@ -7,15 +7,15 @@
 {% endblock %}
 
 {% block nav %}
-{% if logged_in %}
-<a href="{{ url_for("logout") }}">Logout</a>
+{% if session.logged_in %}
+Logged in as {{ session.user_id }}&nbsp;<a href="{{ url_for("logout") }}">Logout</a>
 {% else %}
 <a href="{{ url_for("login") }}">Login</a>&nbsp;<a href="{{ url_for("register") }}">Register</a>
 {% endif %}
 {% endblock %}
 
 {% block content %}
-{% if logged_in %}
+{% if session.logged_in %}
 <form name="dummy" onchange="javascript:store()">
 <h2>Challenges (<span id="completedcount">{{ completed }}</span>/{{ total }} completed):</h2>
 <ul>

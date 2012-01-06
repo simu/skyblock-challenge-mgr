@@ -5,9 +5,17 @@ class User(UserMixin):
     def __init__(self, name, password):
         self.name = name
         self.password = password
+        self.auth_ok = False
 
     def get_id(self):
         return unicode(self.name)
+
+    def is_authenticated(self):
+        return self.auth_ok
+
+    @property
+    def challenge_file(self):
+        return "store-" + self.name + ".txt"
 
     @classmethod
     def get(klass, users, userid):
