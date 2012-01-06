@@ -1,3 +1,7 @@
+#
+# adapted from http://stackoverflow.com/a/7150594
+#
+
 class ComparableMixin(object):
 
     def __eq__(self, other):
