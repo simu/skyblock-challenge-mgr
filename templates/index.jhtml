@@ -8,7 +8,7 @@
 
 {% block nav %}
 {% if session.logged_in %}
-Logged in as {{ session.user_id }}&nbsp;<a href="{{ url_for("logout") }}">Logout</a>
+Logged in as {{ session.user.name }}&nbsp;<a href="{{ url_for("logout") }}">Logout</a>
 {% else %}
 <a href="{{ url_for("login") }}">Login</a>&nbsp;<a href="{{ url_for("register") }}">Register</a>
 {% endif %}
@@ -17,9 +17,10 @@ Logged in as {{ session.user_id }}&nbsp;<a href="{{ url_for("logout") }}">Logout
 {% block content %}
 {% if session.logged_in %}
 <form name="dummy" onchange="javascript:store()">
-<h2>Challenges (<span id="completedcount">{{ completed }}</span>/{{ total }} completed):</h2>
+<h2>Challenges (<span id="completedcount">{{ challenges.completed }}</span>/{{ challenges.count }} completed):</h2>
 <ul>
-{% for c in challenges %}
+{% if challenges %}
+{% for c in challenges.challenges %}
 <li>
     {% if c.has_amount %}
     <input type="text" class="amnt" name="{{ c.id }}" id="data{{ c.id }}" value="{{ c.current_amount }}" />/<b>{{ c.amount }}</b>
@@ -29,6 +30,7 @@ Logged in as {{ session.user_id }}&nbsp;<a href="{{ url_for("logout") }}">Logout
     <span id="text{{ c.id }}" {% if c.completed %}class="completed"{% endif %}>{{ c }}</span>
 </li>
 {% endfor %}
+{% endif %}
 {% else %}
 <h2> filler text</h2>
 {% endif %}

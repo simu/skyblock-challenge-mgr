@@ -21,10 +21,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flaskext.login import LoginManager, login_user, logout_user, AnonymousUser, login_required
 from user import load_users, save_users, User
-from challenges import load_challenges, save_challenges
+from challenges import load_challenges, get_challenges
 
 # skyblock version
 version="2.1"
@@ -50,9 +50,14 @@ if 'open_instance_resource' not in dir(skyblock):
 
 @skyblock.route("/")
 def index():
-    skyblock.open_session(request)
-    print session
-    return render_template('index.jhtml', version=version)
+    if 'user' in session:
+        user = session['user']
+        ch = get_challenges(user)
+        if ch is None:
+            ch = load_challenges(skyblock, user)
+    else:
+        ch = None
+    return render_template('index.jhtml', version=version, challenges=ch)
 
 @skyblock.route("/store.js")
 def storejs():
@@ -62,19 +67,12 @@ def storejs():
 @skyblock.route("/store", methods=['POST'])
 def store():
     if request.method == "POST":
-        challenges = session['challenges']
+        challenges = get_challenges(session['user'])
         try:
             data = map(int, request.data.split(',')[:-1])
-            if len(data) != len(challenges):
-                return "size mismatch"
-            fades=[]
-            for c,v in zip(challenges, data):
-                old_completed = c.completed
-                c.current_amount = v
-                if old_completed != c.completed:
-                    fades.append("%d=%.1f"%(c.id, 0.4 if c.completed else 1))
-
-            save_challenges(skyblock, session['user'], challenges)
+            fades = challenges.update(data)
+            with skyblock.open_instance_resource(session['user'].challenge_file, "w") as f:
+                challenges.save(f)
 
             fades.insert(0, str(len([ c for c in challenges if c.completed ])))
             fades.insert(0, "Saving succeeded")
@@ -85,30 +83,32 @@ def store():
     else:
         return "Only accepts POST"
 
+def login_successful(user, target="index"):
+    session['user'] = user
+    session['challenges'] = load_challenges(skyblock, user)
+    session['logged_in'] = True
+    flash("Login successful")
+    return redirect(url_for(target))
+
+
+
 @skyblock.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST": # process login form
         import sha
-        print request.form
         user = skyblock.users.get(request.form.get('username'), None)
         remember = request.form.get('remember', False)
         if remember is not False:
             remember = True
         password = request.form.get('password')
-        user.auth_ok = sha.new(password).hexdigest() == user.password
+        if user is not None:
+            user.auth_ok = sha.new(password).hexdigest() == user.password
         if user is None:
             flash("No such user")
-        elif not login_user(user, remember):
+        elif not login_user(user, False):
             flash("login failed")
         else:
-            session['user'] = user
-            session['user_id'] = user.get_id()
-            session['challenges'] = load_challenges(skyblock, user)
-            session['logged_in'] = True
-            r = make_response(redirect(url_for("index")))
-            print session
-            skyblock.save_session(session, r)
-            return r
+            return login_successful(user)
     return render_template('login.jhtml',version=version)
 
 @skyblock.route("/register", methods=['GET', 'POST'])
@@ -120,7 +120,6 @@ def register():
             skyblock.form = request.form
             return redirect(url_for("register"))
         user = User.register(skyblock.users, request.form.get('username'), sha.new(request.form.get('pw')).hexdigest())
-        print user
         if user is None:
             flash("Username exists already")
             skyblock.form = request.form
@@ -128,12 +127,8 @@ def register():
         save_users(skyblock)
         if not login_user(user):
             flash("login failed")
-            return redirect(url_for("login"))
-        session['user'] = user
-        session['user_id'] = user.get_id()
-        session['challenges'] = load_challenges(skyblock, user)
-        session['logged_in'] = True
-        return redirect(url_for("index"))
+            return redirect(url_for("register"))
+        return login_successful(user)
     else:
         return render_template('register.jhtml', version=version)
 
@@ -141,10 +136,7 @@ def register():
 @skyblock.route("/logout")
 def logout():
     logout_user()
-    user = session.pop('user', None)
-    session.pop('user_id', None)
-    ch = session.pop('challenges', None)
-    save_challenges(skyblock, user, ch)
+    session.pop('user', None)
     session.pop('logged_in', None)
     return redirect(url_for("index"))
 
