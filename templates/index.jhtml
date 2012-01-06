@@ -18,6 +18,7 @@ Logged in as <span class="emph" id="username">{{ session.user.name }}</span><a h
 {% if session.logged_in %}
 <form name="dummy" onchange="javascript:store()">
 <h2>Challenges (<span id="completedcount">{{ challenges.completed }}</span>/{{ challenges.count }} completed):</h2>
+<a href="#" data-hidden="false" id="hidecompleted" class="navbutton" onclick="javascript:toggle_hide_completed()">Hide completed challenges</a>
 <ul>
 {% if challenges %}
 {% for c in challenges.challenges %}

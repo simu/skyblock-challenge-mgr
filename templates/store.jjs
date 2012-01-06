@@ -4,12 +4,12 @@ function store() {
 		if($("#data"+i).is(":checkbox")) {
 			data += ($("#data"+i).is(":checked")?1:0) + ",";
 		}
-        else if($("#data"+i).is(":text")) {
-            data += $("#data"+i).val()+","
-        }
-        else {
-            data += "0,"
-        }
+		else if($("#data"+i).is(":text")) {
+			data += $("#data"+i).val()+","
+		}
+		else {
+			data += "0,"
+		}
 	}
 	r = new XMLHttpRequest();
 	r.onreadystatechange=function(){
@@ -19,13 +19,45 @@ function store() {
 			$("#responsediv").fadeIn().delay(1500).fadeOut();
 			$("#completedcount").html(elems[1]);
 			if (elems.length > 2) {
+				var hide = $("#hidecompleted").data("hidden");
 				for (i = 2; i < elems.length; i++) {
 					d = elems[i].split('=');
-					$("#item"+d[0]).animate({opacity:d[1]},1500)
+					$("#item"+d[0]).animate({opacity:d[1]},1500);
+					if (d[1]!=1.0) {
+						$("#item"+d[0]).addClass("completed");
+						if (hide) {
+							$("#item"+d[0]).fadeOut();
+						}
+					}
+					else {
+						$("#item"+d[0]).removeClass("completed");
+						if (hide) {
+							$("#item"+d[0]).fadeIn();
+						}
+					}
 				}
 			}
 		}
 	}
 	r.open("POST", "{{ url_for('store') }}", true);
 	r.send(data)
+}
+
+function toggle_hide_completed() {
+	var a = $("#hidecompleted");
+	var is_hidden = eval(a.data("hidden"));
+	if (is_hidden) {
+		$("li[class=completed]").each(function(){
+			$(this).fadeIn()
+		});
+		a.data("hidden", false);
+		a.html("Hide completed challenges");
+	}
+	else {
+		$("li[class=completed]").each(function(){
+			$(this).fadeOut()
+		});
+		a.data("hidden", true);
+		a.html("Unhide completed challenges");
+	}
 }
