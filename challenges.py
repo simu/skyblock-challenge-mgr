@@ -106,9 +106,11 @@ def load_challenges(app, user):
     for c,v in zip(ch, data):
         c.current_amount = v
 
-    challenges[user] = ChallengeSet(ch)
+    ch = ChallengeSet(ch)
+    challenges[user] = ch
+    return ch
 
 def get_challenges(user):
-    ch = challenges.get(user,None)
+    ch = challenges.get(user, None)
     return ch
 
