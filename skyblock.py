@@ -145,6 +145,7 @@ def logout():
     logout_user()
     session.pop('user', None)
     session.pop('logged_in', None)
+    session.pop('prefs', None)
     return redirect(url_for("index"))
 
 @skyblock.template_filter("shortcid")
