@@ -9,7 +9,7 @@ map you've completed.
 Currently, the file `challenges.txt` represents the challenges of SkyBlock v2.1.
 You can easily update the challenge set by updating the file `challenges.txt`
 with the new set of challenges (one challenge text per line, concatenated with
-the amount for challenges in the form do <amount> of X. See `challenges.txt`
+the amount for challenges in the form do `amount` of X. See `challenges.txt`
 for the exact format).
 
 How to use
