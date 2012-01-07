@@ -50,9 +50,6 @@ class User(UserMixin, ComparableMixin):
 
     @classmethod
     def register(klass, users, name, password):
-        print users
-        print name
-        print password
         if users.has_key(name):
             return None
         u = User(name, password)
@@ -73,7 +70,6 @@ def load_users(app):
         with app.open_instance_resource("users.txt") as u:
             users = pickle.load(u)
             app.users = dict( [ (name, User(name, password)) for (name, password) in users ] )
-            print app.users
     except Exception as e:
         print e
         app.users = dict()

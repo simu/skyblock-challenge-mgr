@@ -61,7 +61,6 @@ def index():
             session['prefs'] = load_preferences(skyblock, user)
     else:
         ch = None
-    print session
     return render_template('index.jhtml', version=version, challenges=ch, changelog=changelog)
 
 @skyblock.route("/ajax.js")
@@ -92,9 +91,7 @@ def store():
 @skyblock.route("/updateprefs", methods=['POST'])
 def updateprefs():
     if request.method == "POST":
-        print request.data
         session['prefs'].hide_completed = request.data=="1"
-        print session['prefs'].hide_completed
         with skyblock.open_instance_resource(session['user'].prefs_file, "w") as f:
             session['prefs'].save(f)
         session.modified = True
