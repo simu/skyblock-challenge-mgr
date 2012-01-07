@@ -26,7 +26,7 @@ from flaskext.login import LoginManager, login_user, logout_user, AnonymousUser,
 from user import load_users, save_users, User
 from challenges import load_challenges, get_challenges
 from preferences import load_preferences
-from util import update_session, login_successful, changelog
+from util import update_session, login_successful, changelog as gen_changelog
 
 # skyblock version
 version="2.1"
@@ -159,7 +159,8 @@ def tolower(s):
     return str(s).lower()
 
 def create_app():
-    changelog()
+    global changelog
+    changelog = gen_changelog()
     load_users(skyblock)
     return skyblock
 

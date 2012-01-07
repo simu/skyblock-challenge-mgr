@@ -1,7 +1,9 @@
 {% extends "base.jhtml" %}
 
 {% set site = "" %}
+{% if session.logged_in %}
 {% set hide_completed = session['prefs'].hide_completed %}
+{% endif %}
 
 {% block js %}
 <script type="text/javascript" src="{{ url_for('ajaxjs') }}"></script>
