@@ -61,7 +61,7 @@ def index():
             session['prefs'] = load_preferences(skyblock, user)
     else:
         ch = None
-    return render_template('index.jhtml', version=version, challenges=ch, changelog=changelog)
+    return render_template('index.jhtml', version=version, challenges=ch)
 
 @skyblock.route("/ajax.js")
 def ajaxjs():
