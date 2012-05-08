@@ -30,7 +30,7 @@ class Preferences(object):
         pickle.dump(self.hide_completed, file)
 
     def __repr__(self):
-        return "Preferences(hide_completed=%r)" % self.hide_completed
+        return "Preferences(hide_completed={0})".format(self.hide_completed)
 
 def load_preferences(app, user):
     try:

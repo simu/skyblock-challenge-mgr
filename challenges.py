@@ -68,7 +68,7 @@ class ChallengeSet(object):
             old_completed = c.completed
             c.current_amount = v
             if old_completed != c.completed:
-                fades.append("%d=%.1f"%(c.id, 0.4 if c.completed else 1))
+                fades.append("{0.id:d}={opacity:.1f}".format(c, opacity=0.4 if c.completed else 1))
         return fades
 
     def save(self, file):
