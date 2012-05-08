@@ -42,7 +42,7 @@ Craft 10 signs.|10
 Craft 20 ladders.|20
 Craft 20 fences.|20
 Craft 20 fence gates.|20
-Craft 10 levers.|11
+Craft 10 levers.|10
 Craft 10 trapdoors.|10
 Craft 10 stone pressure plates.|10
 Craft 10 wooden pressure plates.|10
