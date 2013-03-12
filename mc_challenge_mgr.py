@@ -77,7 +77,6 @@ def ajaxjs():
 @mc_challenge_mgr.route("/changemap", methods=['GET'])
 def changemap():
     if request.method == "GET":
-        curr_map = session['current_map']
         new_map = request.args['mapname']
         if new_map not in avail_maps:
             return "Map %s not available" % new_map
@@ -94,6 +93,9 @@ def store():
         challenges = get_challenges(session['user'], mapname)
         try:
             data = map(int, request.data.split(',')[:-1])
+            # truncate data length if longer than challenges length
+            if len(data) > challenges.count:
+                data = data[:challenges.count]
             fades = challenges.update(data)
             with mc_challenge_mgr.open_instance_resource(session['user'].challenge_file[mapname], "w") as f:
                 challenges.save(f)
