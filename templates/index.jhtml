@@ -22,11 +22,13 @@ Logged in as <span class="emph" id="username">{{ session.user.name }}</span>
 {% block content %}
 {% if session.logged_in %}
 <div style="display:none" id="prefwindow">{% include "preferences.jhtml" %}</div>
+<h3>Available maps:</h3>
 <ul class="map-selection">
 {% for map in available_maps %}
-<li><a href="{{ url_for("changemap") }}?mapname={{ map }}">{{ map }}</a></li>
+<li><a class="navbutton" href="{{ url_for("changemap") }}?mapname={{ map }}">{{ map }}</a></li>
 {% endfor %}
 </ul>
+<br />
 <h2>Challenges for {{ challenges.mapname }} (<span id="completedcount">{{ challenges.completed }}</span>/{{ challenges.count }} completed):</h2>
 <a href="#" data-hidden="{{ hide_completed|lower }}" id="hidecompleted"
    class="navbutton" onclick="javascript:toggle_hide_completed()">

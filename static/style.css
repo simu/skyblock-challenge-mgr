@@ -100,3 +100,12 @@ body {
     font-family: monospace;
 }
 
+ul.map-selection {
+    list-style-type: none;
+}
+
+ul.map-selection li {
+    float:left;
+    margin-right:.2em;
+}
+
