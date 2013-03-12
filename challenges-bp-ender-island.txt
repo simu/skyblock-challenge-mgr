@@ -1,0 +1,10 @@
+Make 10 loaves of bread.|10
+Obtain diamonds.|2
+Catch a fish.|1
+Build a secret base using redstone for the entrance.|1
+Obtain 10 wool.|10
+Create a pretty blue wool carpet for your house.|1
+Build an automatic cactus farm.|1
+Create a mob trap.|1
+Build a structure that hangs underneath the lowest point of the island.|1
+Play a song on a Jukebox.|1

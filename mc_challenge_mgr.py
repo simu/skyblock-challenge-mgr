@@ -31,6 +31,9 @@ from util import update_session, login_successful, changelog as gen_changelog
 # mc_challenge_mgr version
 version="1.0"
 
+# supported maps
+avail_maps = [ "skyblock", "bp-ender-island" ]
+
 mc_challenge_mgr = Flask(__name__)
 mc_challenge_mgr.secret_key = "seeeecret"
 anoynmous = AnonymousUser()
@@ -54,28 +57,45 @@ if 'open_instance_resource' not in dir(mc_challenge_mgr):
 def index():
     if 'user' in session:
         user = session['user']
-        ch = get_challenges(user)
+        if 'current_map' not in session:
+            session['current_map'] = avail_maps[0]
+        map = session['current_map']
+        ch = get_challenges(user, map)
         if ch is None:
-            ch = load_challenges(mc_challenge_mgr, user)
+            ch = load_challenges(mc_challenge_mgr, user, map)
         if 'prefs' not in session:
             session['prefs'] = load_preferences(mc_challenge_mgr, user)
     else:
         ch = None
-    return render_template('index.jhtml', version=version, challenges=ch)
+    return render_template('index.jhtml', version=version, challenges=ch, available_maps=avail_maps)
 
 @mc_challenge_mgr.route("/ajax.js")
 def ajaxjs():
     return render_template('ajax.jjs')
 
 @login_required
+@mc_challenge_mgr.route("/changemap", methods=['GET'])
+def changemap():
+    if request.method == "GET":
+        curr_map = session['current_map']
+        new_map = request.args['mapname']
+        if new_map not in avail_maps:
+            return "Map %s not available" % new_map
+        session['current_map'] = new_map
+        return redirect(url_for("index"))
+    else:
+        return "Only accepts GET"
+
+@login_required
 @mc_challenge_mgr.route("/store", methods=['POST'])
 def store():
     if request.method == "POST":
-        challenges = get_challenges(session['user'])
+        mapname = session['current_map']
+        challenges = get_challenges(session['user'], mapname)
         try:
             data = map(int, request.data.split(',')[:-1])
             fades = challenges.update(data)
-            with mc_challenge_mgr.open_instance_resource(session['user'].challenge_file, "w") as f:
+            with mc_challenge_mgr.open_instance_resource(session['user'].challenge_file[mapname], "w") as f:
                 challenges.save(f)
 
             fades.insert(0, str(len([ c for c in challenges if c.completed ])))

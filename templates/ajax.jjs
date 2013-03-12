@@ -59,3 +59,11 @@ function save_prefs() {
 	r.send(hide_completed)
 }
 
+function changemap(mapname) {
+	r = new XMLHttpRequest();
+	r.onreadystatechange=function(){
+        console.log(r.responseText)
+	}
+	r.open("POST", "{{ url_for('changemap') }}", true);
+	r.send(mapname)
+}

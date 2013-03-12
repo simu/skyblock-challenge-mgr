@@ -49,8 +49,9 @@ class Challenge(object):
         return self.amount > 1
 
 class ChallengeSet(object):
-    def __init__(self, challenges):
+    def __init__(self, challenges, mapname):
         self.challenges = challenges
+        self._mapname = mapname
 
     @property
     def completed(self):
@@ -59,6 +60,10 @@ class ChallengeSet(object):
     @property
     def count(self):
         return len(self.challenges)
+
+    @property
+    def mapname(self):
+        return self._mapname
 
     def update(self, data):
         fades = []
@@ -79,38 +84,38 @@ class ChallengeSet(object):
         return iter(self.challenges)
 
 # read challenge descriptions
-def init_challenges(app):
+def init_challenges(app, mapname):
     challenges = []
-    with app.open_resource("challenges.txt") as cfile:
+    with app.open_resource("challenges-%s.txt" % mapname) as cfile:
         chtxts = map(str.strip, cfile.readlines())
     for i in xrange(len(chtxts)):
         text,amount = chtxts[i].split('|')
         challenges.append(Challenge(i, text, int(amount)))
     return challenges
 
-def save_challenges(app, user):
-    ch = challenges.get(user, None)
+def save_challenges(app, user, mapname):
+    ch = challenges.get((user, mapname), None)
     if ch is None:
         return False
-    with app.open_instance_resource(user.challenge_file, "w") as f:
+    with app.open_instance_resource(user.challenge_file[mapname], "w") as f:
         ch.save(f)
     return True
 
-def load_challenges(app, user):
-    ch = init_challenges(app)
+def load_challenges(app, user, mapname):
+    ch = init_challenges(app, mapname)
     try:
-        with app.open_instance_resource(user.challenge_file) as f:
+        with app.open_instance_resource(user.challenge_file[mapname]) as f:
             data = pickle.load(f)
     except:
         data = [0] * len(ch)
     for c,v in zip(ch, data):
         c.current_amount = v
 
-    ch = ChallengeSet(ch)
-    challenges[user] = ch
+    ch = ChallengeSet(ch, mapname)
+    challenges[(user,mapname)] = ch
     return ch
 
-def get_challenges(user):
-    ch = challenges.get(user, None)
+def get_challenges(user, mapname):
+    ch = challenges.get((user,mapname), None)
     return ch
 

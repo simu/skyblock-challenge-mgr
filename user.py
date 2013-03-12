@@ -24,6 +24,16 @@ from flask_login import UserMixin
 import pickle
 from util import ComparableMixin
 
+class ChallengeFileFactory(object):
+
+    def __init__(self, name):
+        self.name = name;
+
+    def __getitem__(self, key):
+        return "store-" + self.name + "-" + key + ".txt"
+
+    # we don't need len
+
 class User(UserMixin, ComparableMixin):
     def __init__(self, name, password):
         self.name = name
@@ -38,7 +48,7 @@ class User(UserMixin, ComparableMixin):
 
     @property
     def challenge_file(self):
-        return "store-" + self.name + ".txt"
+        return ChallengeFileFactory(self.name)
 
     @property
     def prefs_file(self):
