@@ -27,7 +27,7 @@ if path not in sys.path:
 	sys.path.append(path)
 
 try:
-    from skyblock import create_app
+    from mc_challenge_mgr import create_app
     application = create_app()
 except Exception as e:
     raise

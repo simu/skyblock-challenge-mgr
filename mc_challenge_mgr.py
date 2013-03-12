@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (c) 2012 Simon Gerber <gesimu@gmail.com>
+# Copyright (c) 2012-2013 Simon Gerber <gesimu@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -28,54 +28,54 @@ from challenges import load_challenges, get_challenges
 from preferences import load_preferences
 from util import update_session, login_successful, changelog as gen_changelog
 
-# skyblock version
-version="2.1"
+# mc_challenge_mgr version
+version="1.0"
 
-skyblock = Flask(__name__)
-skyblock.secret_key = "seeeecret"
+mc_challenge_mgr = Flask(__name__)
+mc_challenge_mgr.secret_key = "seeeecret"
 anoynmous = AnonymousUser()
 login_mgr = LoginManager()
-login_mgr.setup_app(skyblock)
+login_mgr.setup_app(mc_challenge_mgr)
 
 # setup user loader for login manager
 @login_mgr.user_loader
 def load_user(userid):
-    User.get(skyblock.users, userid)
+    User.get(mc_challenge_mgr.users, userid)
 
 # make open_instance_resource Flask 0.7 compatible
 open_instance_resource = None
-if 'open_instance_resource' not in dir(skyblock):
+if 'open_instance_resource' not in dir(mc_challenge_mgr):
     from os.path import join, abspath, dirname
     package = abspath(dirname(__file__))
-    skyblock.open_instance_resource = lambda file, mode="rb": \
+    mc_challenge_mgr.open_instance_resource = lambda file, mode="rb": \
         open(join(package, "instance", file), mode)
 
-@skyblock.route("/")
+@mc_challenge_mgr.route("/")
 def index():
     if 'user' in session:
         user = session['user']
         ch = get_challenges(user)
         if ch is None:
-            ch = load_challenges(skyblock, user)
+            ch = load_challenges(mc_challenge_mgr, user)
         if 'prefs' not in session:
-            session['prefs'] = load_preferences(skyblock, user)
+            session['prefs'] = load_preferences(mc_challenge_mgr, user)
     else:
         ch = None
     return render_template('index.jhtml', version=version, challenges=ch)
 
-@skyblock.route("/ajax.js")
+@mc_challenge_mgr.route("/ajax.js")
 def ajaxjs():
     return render_template('ajax.jjs')
 
 @login_required
-@skyblock.route("/store", methods=['POST'])
+@mc_challenge_mgr.route("/store", methods=['POST'])
 def store():
     if request.method == "POST":
         challenges = get_challenges(session['user'])
         try:
             data = map(int, request.data.split(',')[:-1])
             fades = challenges.update(data)
-            with skyblock.open_instance_resource(session['user'].challenge_file, "w") as f:
+            with mc_challenge_mgr.open_instance_resource(session['user'].challenge_file, "w") as f:
                 challenges.save(f)
 
             fades.insert(0, str(len([ c for c in challenges if c.completed ])))
@@ -88,22 +88,22 @@ def store():
         return "Only accepts POST"
 
 @login_required
-@skyblock.route("/updateprefs", methods=['POST'])
+@mc_challenge_mgr.route("/updateprefs", methods=['POST'])
 def updateprefs():
     if request.method == "POST":
         session['prefs'].hide_completed = request.data=="1"
-        with skyblock.open_instance_resource(session['user'].prefs_file, "w") as f:
+        with mc_challenge_mgr.open_instance_resource(session['user'].prefs_file, "w") as f:
             session['prefs'].save(f)
         session.modified = True
-        return update_session(skyblock, "Preferences updated successfully")
+        return update_session(mc_challenge_mgr, "Preferences updated successfully")
     else:
         return "only POST"
 
-@skyblock.route("/login", methods=['GET', 'POST'])
+@mc_challenge_mgr.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST": # process login form
         import hashlib
-        user = skyblock.users.get(request.form.get('username'), None)
+        user = mc_challenge_mgr.users.get(request.form.get('username'), None)
         remember = request.form.get('remember', False)
         if remember is not False:
             remember = True
@@ -115,32 +115,32 @@ def login():
         elif not login_user(user, False):
             flash("login failed")
         else:
-            return login_successful(skyblock, user)
+            return login_successful(mc_challenge_mgr, user)
     return render_template('login.jhtml',version=version)
 
-@skyblock.route("/register", methods=['GET', 'POST'])
+@mc_challenge_mgr.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == "POST": # process registration form
         import hashlib
         if request.form.get('pw') != request.form.get('pw2'):
             flash("Password mismatch")
-            skyblock.form = request.form
+            mc_challenge_mgr.form = request.form
             return redirect(url_for("register"))
-        user = User.register(skyblock.users, request.form.get('username'), hashlib.sha1(request.form.get('pw')).hexdigest())
+        user = User.register(mc_challenge_mgr.users, request.form.get('username'), hashlib.sha1(request.form.get('pw')).hexdigest())
         if user is None:
             flash("Username exists already")
-            skyblock.form = request.form
+            mc_challenge_mgr.form = request.form
             return redirect(url_for("register"))
-        save_users(skyblock)
+        save_users(mc_challenge_mgr)
         if not login_user(user):
             flash("login failed")
             return redirect(url_for("register"))
-        return login_successful(skyblock, user)
+        return login_successful(mc_challenge_mgr, user)
     else:
         return render_template('register.jhtml', version=version)
 
 @login_required
-@skyblock.route("/logout")
+@mc_challenge_mgr.route("/logout")
 def logout():
     logout_user()
     session.pop('user', None)
@@ -148,19 +148,19 @@ def logout():
     session.pop('prefs', None)
     return redirect(url_for("index"))
 
-@skyblock.template_filter("shortcid")
+@mc_challenge_mgr.template_filter("shortcid")
 def shortcid(s):
     return s[:8]
 
-@skyblock.template_filter("tolower")
+@mc_challenge_mgr.template_filter("tolower")
 def tolower(s):
     return str(s).lower()
 
 def create_app():
     global changelog
     changelog = gen_changelog()
-    load_users(skyblock)
-    return skyblock
+    load_users(mc_challenge_mgr)
+    return mc_challenge_mgr
 
 if __name__ == "__main__":
     create_app().run(debug=True)
