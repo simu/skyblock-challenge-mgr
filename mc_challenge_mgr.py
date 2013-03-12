@@ -22,7 +22,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flaskext.login import LoginManager, login_user, logout_user, AnonymousUser, login_required
+from flask_login import LoginManager, login_user, logout_user, AnonymousUser, login_required
 from user import load_users, save_users, User
 from challenges import load_challenges, get_challenges
 from preferences import load_preferences
