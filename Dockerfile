@@ -10,7 +10,10 @@ RUN adduser --uid 1001 --ingroup adm -- appuser && \
     touch /app/instance/users.txt && \
     chmod 777 /app/instance && \
     mkdir -p /var/supervisor && \
-    chown appuser:adm /var/supervisor
+    chown appuser:adm /var/supervisor && \
+    chown -R appuser:adm /var/log/nginx && \
+    chown -R appuser:adm /var/cache/nginx && \
+    chmod -R g+w /var/log
 
 # provide our own supervisord config that works as non-root
 COPY supervisord-service.conf /etc/supervisor/supervisord.conf
@@ -50,10 +53,7 @@ COPY . /app
 WORKDIR /app
 
 RUN chown appuser:adm /app && \
-    chmod -R g+w /app && \
-    chown -R appuser:adm /var/log/nginx && \
-    chown -R appuser:adm /var/cache/nginx && \
-    chmod -R g+w /var/log
+    chmod -R g+w /app
 
 # Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
 ENV PYTHONPATH=/app
