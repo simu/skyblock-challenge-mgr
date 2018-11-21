@@ -42,7 +42,12 @@ login_mgr.setup_app(mc_challenge_mgr)
 # setup user loader for login manager
 @login_mgr.user_loader
 def load_user(userid):
-    User.get(mc_challenge_mgr.users, userid)
+    if userid not in mc_challenge_mgr.users:
+        print ">>>>> load_user(%s) -> users = %r... reloading users" % (userid, mc_challenge_mgr.users)
+        load_users(mc_challenge_mgr)
+    u = User.get(mc_challenge_mgr.users, userid)
+    if u is None:
+        logout_impl()
 
 # make open_instance_resource Flask 0.7 compatible
 open_instance_resource = None
@@ -54,8 +59,8 @@ if 'open_instance_resource' not in dir(mc_challenge_mgr):
 
 @mc_challenge_mgr.route("/")
 def index():
-    if 'user' in session:
-        user = get_session_user()
+    user = get_session_user(mc_challenge_mgr)
+    if user is not None:
         if 'current_map' not in session:
             session['current_map'] = avail_maps[0]
         map = session['current_map']
@@ -89,7 +94,7 @@ def changemap():
 def store():
     if request.method == "POST":
         mapname = session['current_map']
-        user = get_session_user()
+        user = get_session_user(mc_challenge_mgr)
         challenges = get_challenges(user, mapname)
         try:
             data = map(int, request.data.split(',')[:-1])
@@ -113,7 +118,7 @@ def store():
 @mc_challenge_mgr.route("/updateprefs", methods=['POST'])
 def updateprefs():
     if request.method == "POST":
-        user = get_session_user()
+        user = get_session_user(mc_challenge_mgr)
         prefs = get_session_prefs()
         prefs.hide_completed = request.data=="1"
         with mc_challenge_mgr.open_instance_resource(user.prefs_file, "w") as f:
@@ -164,14 +169,17 @@ def register():
         print version
         return render_template('register.jhtml', version=version)
 
-@login_required
-@mc_challenge_mgr.route("/logout")
-def logout():
-    logout_user()
+def logout_impl():
     session.pop('user', None)
     session.pop('logged_in', None)
     session.pop('prefs', None)
     return redirect(url_for("index"))
+
+@login_required
+@mc_challenge_mgr.route("/logout")
+def logout():
+    logout_user()
+    return logout_impl()
 
 @mc_challenge_mgr.template_filter("shortcid")
 def shortcid(s):

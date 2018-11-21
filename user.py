@@ -57,6 +57,8 @@ class User(UserMixin, ComparableMixin):
 
     @classmethod
     def get(klass, users, userid):
+        if userid not in users:
+            return None
         return users[userid]
 
     @classmethod
@@ -92,13 +94,14 @@ def save_users(app):
     except:
         raise
 
-def get_session_user():
+def get_session_user(app):
+    if 'user' not in session:
+        return None
     u = session['user']
-    user = User(u['mcm_user_name'], u['mcm_user_pw'])
-    user.auth_ok = u['mcm_authok']
-    return user
+    if u['mcm_user_name'] not in app.users:
+        return None
+    else:
+        return app.users[u['mcm_user_name']]
 
 def make_session_user(user):
-    return { 'mcm_user_name': user.name,
-             'mcm_user_pw': user.password,
-             'mcm_authok': user.auth_ok }
+    return { 'mcm_user_name': user.name }
