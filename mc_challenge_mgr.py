@@ -208,8 +208,6 @@ def tolower(s):
     return str(s).lower()
 
 def create_app():
-    global changelog
-    changelog = gen_changelog()
     load_users(mc_challenge_mgr)
     return mc_challenge_mgr
 

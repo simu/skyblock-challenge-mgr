@@ -48,16 +48,18 @@ Logged in as <span class="emph" id="username">{{ session.user.name }}</span>
 </li>
 {% endfor %}
 {% endif %}
+</ul>
+</form>
 {% else %}
 <h2>Get the Minecraft Map</h2>
 <a href="http://www.minecraftforum.net/topic/600254-surv-skyblock/">To the thread (minecraftforums)</a>
 <h2>Get the code</h2>
-<a href="http://www.minecraftforum.net/topic/600254-surv-skyblock/">GitHub</a>
+<a href="http://github.com/simu/skyblock-challenge-mgr/">GitHub</a>
+<!--
 <h2>Changelog</h2>
 <ul>
 {% include "changelog.jhtml" %}
 </ul>
+-->
 {% endif %}
-</ul>
-</form>
 {% endblock %}
