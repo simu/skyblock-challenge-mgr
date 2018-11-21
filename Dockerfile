@@ -4,15 +4,14 @@ LABEL maintainer="Simon Gerber <gesimu@gmail.com>"
 
 RUN pip install flask flask-login
 
-RUN adduser --uid 1001 --ingroup adm -- appuser && \
-    usermod -a -G root appuser && \
+RUN adduser --uid 1001 --ingroup root -- appuser && \
     mkdir -p /app/instance && \
     touch /app/instance/users.txt && \
     chmod 777 /app/instance && \
     mkdir -p /var/supervisor && \
-    chown appuser:adm /var/supervisor && \
-    chown -R appuser:adm /var/log/nginx && \
-    chown -R appuser:adm /var/cache/nginx && \
+    chown appuser:root /var/supervisor && \
+    chown -R appuser:root /var/log/nginx && \
+    chown -R appuser:root /var/cache/nginx && \
     chmod -R g+w /var/log
 
 # provide our own supervisord config that works as non-root
@@ -52,7 +51,7 @@ ENV STATIC_INDEX 0
 COPY . /app
 WORKDIR /app
 
-RUN chown appuser:adm /app && \
+RUN chown appuser:root /app && \
     chmod -R g+w /app
 
 # Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
