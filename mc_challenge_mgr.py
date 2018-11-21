@@ -82,7 +82,6 @@ def get_session_prefs():
 def index():
     if 'user' in session:
         user = get_session_user()
-        print user
         if 'current_map' not in session:
             session['current_map'] = avail_maps[0]
         map = session['current_map']
