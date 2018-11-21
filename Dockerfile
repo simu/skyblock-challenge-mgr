@@ -4,17 +4,18 @@ LABEL maintainer="Simon Gerber <gesimu@gmail.com>"
 
 RUN pip install flask flask-login
 
-RUN adduser --uid 1001 --ingroup root -- appuser && \
+RUN adduser --uid 1001 --ingroup root appuser && \
     mkdir -p /app/instance && \
-    touch /app/instance/users.txt && \
-    chmod 777 /app/instance && \
     mkdir -p /var/supervisor && \
-    chown appuser:root /var/supervisor && \
-    chown -R appuser:root /var/log/nginx && \
+    chown -R appuser:root /app/instance && \
     chown -R appuser:root /var/cache/nginx && \
-    chmod -R g+w /var/log && \
+    chown -R appuser:root /var/log/nginx && \
+    chown -R appuser:root /var/supervisor && \
+    chmod -R g+w /app/instance && \
     chmod -R g+w /var/cache/nginx && \
-    chmod -R g+w /var/supervisor
+    chmod -R g+w /var/log && \
+    chmod -R g+w /var/supervisor && \
+    touch /app/instance/users.txt
 
 # provide our own supervisord config that works as non-root
 COPY supervisord-service.conf /etc/supervisor/supervisord.conf
