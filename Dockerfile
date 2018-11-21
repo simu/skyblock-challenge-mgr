@@ -4,11 +4,22 @@ LABEL maintainer="Simon Gerber <gesimu@gmail.com>"
 
 RUN pip install flask flask-login
 
-RUN adduser --uid 1001 --ingroup root appuser && \
+RUN adduser --uid 1001 --ingroup adm -- appuser && \
+    usermod -a -G root appuser && \
     mkdir -p /app/instance && \
     touch /app/instance/users.txt && \
-    chmod 777 /app/instance
+    chmod 777 /app/instance && \
+    mkdir -p /var/supervisor && \
+    chown appuser:adm /var/supervisor
 
+# provide our own supervisord config that works as non-root
+COPY supervisord-service.conf /etc/supervisor/supervisord.conf
+
+# provide our own nginx base config
+COPY nginx-service.conf /etc/nginx/nginx.conf
+
+# provide own global uwsgi.ini which works as non-root
+COPY uwsgi-service.ini /etc/uwsgi/uwsgi.ini
 
 # By default, allow unlimited file sizes, modify it to limit the file sizes
 # To have a maximum of 1 MB (Nginx's default) change the line to:
@@ -38,8 +49,11 @@ ENV STATIC_INDEX 0
 COPY . /app
 WORKDIR /app
 
-RUN chown 1001:0 /app && \
-    chmod -R g+w /app
+RUN chown appuser:adm /app && \
+    chmod -R g+w /app && \
+    chown -R appuser:adm /var/log/nginx && \
+    chown -R appuser:adm /var/cache/nginx && \
+    chmod -R g+w /var/log
 
 # Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
 ENV PYTHONPATH=/app
@@ -48,9 +62,11 @@ ENV PYTHONPATH=/app
 COPY setup.sh /setup.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && chmod +x /setup.sh
-
 # Do final service setup before deploying image
 RUN /setup.sh
+
+# Switch to application user for rest
+USER appuser
 
 # entry point is provided by base image
 ENTRYPOINT ["/entrypoint.sh"]
