@@ -22,12 +22,23 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_login import LoginManager, login_user, logout_user, AnonymousUser, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required
 from user import load_users, save_users, User
 from challenges import load_challenges, get_challenges
-from preferences import load_preferences
+from preferences import load_preferences, Preferences
 from util import update_session, login_successful, changelog as gen_changelog
 
+from flask.json import JSONEncoder, JSONDecoder
+
+class MyJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Preferences):
+            return { 'mcm_hide_completed': obj.hide_completed }
+        elif isinstance(obj, User):
+            return { 'mcm_user_name': obj.name, 'mcm_user_pw': obj.password,
+                    'mcm_authok': obj.auth_ok }
+        else:
+            JSONEncoder.default(self, obj)
 # mc_challenge_mgr version
 version="1.0"
 
@@ -36,7 +47,7 @@ avail_maps = [ "skyblock", "bp-ender-island" ]
 
 mc_challenge_mgr = Flask(__name__)
 mc_challenge_mgr.secret_key = "seeeecret"
-anoynmous = AnonymousUser()
+mc_challenge_mgr.json_encoder = MyJSONEncoder
 login_mgr = LoginManager()
 login_mgr.setup_app(mc_challenge_mgr)
 
@@ -53,10 +64,25 @@ if 'open_instance_resource' not in dir(mc_challenge_mgr):
     mc_challenge_mgr.open_instance_resource = lambda file, mode="rb": \
         open(join(package, "instance", file), mode)
 
+def get_session_user():
+    u = session['user']
+    if isinstance(u, dict):
+        user = User(u['mcm_user_name'], u['mcm_user_pw'])
+        user.auth_ok = u['mcm_authok']
+        u = user
+    return u
+
+def get_session_prefs():
+    p = session['prefs']
+    if isinstance(u, dict):
+        p = Preferences(hide_completed=p['mcm_hide_completed'])
+    return p
+
 @mc_challenge_mgr.route("/")
 def index():
     if 'user' in session:
-        user = session['user']
+        user = get_session_user()
+        print user
         if 'current_map' not in session:
             session['current_map'] = avail_maps[0]
         map = session['current_map']
@@ -90,14 +116,15 @@ def changemap():
 def store():
     if request.method == "POST":
         mapname = session['current_map']
-        challenges = get_challenges(session['user'], mapname)
+        user = get_session_user()
+        challenges = get_challenges(user, mapname)
         try:
             data = map(int, request.data.split(',')[:-1])
             # truncate data length if longer than challenges length
             if len(data) > challenges.count:
                 data = data[:challenges.count]
             fades = challenges.update(data)
-            with mc_challenge_mgr.open_instance_resource(session['user'].challenge_file[mapname], "w") as f:
+            with mc_challenge_mgr.open_instance_resource(usr.challenge_file[mapname], "w") as f:
                 challenges.save(f)
 
             fades.insert(0, str(len([ c for c in challenges if c.completed ])))
@@ -113,9 +140,11 @@ def store():
 @mc_challenge_mgr.route("/updateprefs", methods=['POST'])
 def updateprefs():
     if request.method == "POST":
-        session['prefs'].hide_completed = request.data=="1"
-        with mc_challenge_mgr.open_instance_resource(session['user'].prefs_file, "w") as f:
-            session['prefs'].save(f)
+        user = get_session_user()
+        prefs = get_session_prefs()
+        prefs.hide_completed = request.data=="1"
+        with mc_challenge_mgr.open_instance_resource(user.prefs_file, "w") as f:
+            prefs.save(f)
         session.modified = True
         return update_session(mc_challenge_mgr, "Preferences updated successfully")
     else:
@@ -159,6 +188,7 @@ def register():
             return redirect(url_for("register"))
         return login_successful(mc_challenge_mgr, user)
     else:
+        print version
         return render_template('register.jhtml', version=version)
 
 @login_required

@@ -33,9 +33,12 @@ class Preferences(object):
         return "Preferences(hide_completed={0})".format(self.hide_completed)
 
 def load_preferences(app, user):
+    prefs = None
     try:
         with app.open_instance_resource(user.prefs_file) as f:
-            return Preferences(hide_completed=pickle.load(f))
+            prefs = Preferences(hide_completed=pickle.load(f))
     except Exception as e:
-        print e
-        return Preferences()
+        pass
+    if not prefs:
+        prefs = Preferences()
+    return prefs
