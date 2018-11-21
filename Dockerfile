@@ -12,7 +12,9 @@ RUN adduser --uid 1001 --ingroup root -- appuser && \
     chown appuser:root /var/supervisor && \
     chown -R appuser:root /var/log/nginx && \
     chown -R appuser:root /var/cache/nginx && \
-    chmod -R g+w /var/log
+    chmod -R g+w /var/log && \
+    chmod -R g+w /var/cache/nginx && \
+    chmod -R g+w /var/supervisor
 
 # provide our own supervisord config that works as non-root
 COPY supervisord-service.conf /etc/supervisor/supervisord.conf
