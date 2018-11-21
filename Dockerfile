@@ -4,6 +4,12 @@ LABEL maintainer="Simon Gerber <gesimu@gmail.com>"
 
 RUN pip install flask flask-login
 
+RUN adduser --uid 1001 --ingroup root appuser && \
+    mkdir -p /app/instance && \
+    touch /app/instance/users.txt && \
+    chmod 777 /app/instance
+
+
 # By default, allow unlimited file sizes, modify it to limit the file sizes
 # To have a maximum of 1 MB (Nginx's default) change the line to:
 # ENV NGINX_MAX_UPLOAD 1m
@@ -32,8 +38,8 @@ ENV STATIC_INDEX 0
 COPY . /app
 WORKDIR /app
 
-RUN mkdir -p /app/instance && touch /app/instance/users.txt && chmod 777 /app/instance
-
+RUN chown 1001:0 /app && \
+    chmod -R g+w /app
 
 # Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
 ENV PYTHONPATH=/app
