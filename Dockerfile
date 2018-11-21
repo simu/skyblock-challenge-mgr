@@ -45,12 +45,16 @@ RUN chown 1001:0 /app && \
 ENV PYTHONPATH=/app
 
 # Copy start.sh script that will check for a /app/prestart.sh script and run it before starting the app
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+COPY setup.sh /setup.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && chmod +x /setup.sh
+
+# Do final service setup before deploying image
+RUN /setup.sh
 
 # entry point is provided by base image
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Run the start script, it will check for an /app/prestart.sh script (e.g. for migrations)
 # And then will start Supervisor, which in turn will start Nginx and uWSGI
-CMD ["/start.sh"]
+CMD ["/usr/bin/supervisord"]
