@@ -20,6 +20,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from flask import session
 from flask_login import UserMixin
 import pickle
 from util import ComparableMixin
@@ -90,3 +91,14 @@ def save_users(app):
             pickle.dump([ (x.name, x.password) for x in app.users.values() ], u)
     except:
         raise
+
+def get_session_user():
+    u = session['user']
+    user = User(u['mcm_user_name'], u['mcm_user_pw'])
+    user.auth_ok = u['mcm_authok']
+    return user
+
+def make_session_user(user):
+    return { 'mcm_user_name': user.name,
+             'mcm_user_pw': user.password,
+             'mcm_authok': user.auth_ok }

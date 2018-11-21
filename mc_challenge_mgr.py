@@ -23,22 +23,11 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_login import LoginManager, login_user, logout_user, login_required
-from user import load_users, save_users, User
+from user import load_users, save_users, User, get_session_user, make_session_user
 from challenges import load_challenges, get_challenges
-from preferences import load_preferences, Preferences
-from util import update_session, login_successful, changelog as gen_changelog
+from preferences import load_preferences, Preferences, get_session_prefs
+from util import update_session, login_successful
 
-from flask.json import JSONEncoder, JSONDecoder
-
-class MyJSONEncoder(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Preferences):
-            return { 'mcm_hide_completed': obj.hide_completed }
-        elif isinstance(obj, User):
-            return { 'mcm_user_name': obj.name, 'mcm_user_pw': obj.password,
-                    'mcm_authok': obj.auth_ok }
-        else:
-            JSONEncoder.default(self, obj)
 # mc_challenge_mgr version
 version="1.0"
 
@@ -47,7 +36,6 @@ avail_maps = [ "skyblock", "bp-ender-island" ]
 
 mc_challenge_mgr = Flask(__name__)
 mc_challenge_mgr.secret_key = "seeeecret"
-mc_challenge_mgr.json_encoder = MyJSONEncoder
 login_mgr = LoginManager()
 login_mgr.setup_app(mc_challenge_mgr)
 
@@ -64,20 +52,6 @@ if 'open_instance_resource' not in dir(mc_challenge_mgr):
     mc_challenge_mgr.open_instance_resource = lambda file, mode="rb": \
         open(join(package, "instance", file), mode)
 
-def get_session_user():
-    u = session['user']
-    if isinstance(u, dict):
-        user = User(u['mcm_user_name'], u['mcm_user_pw'])
-        user.auth_ok = u['mcm_authok']
-        u = user
-    return u
-
-def get_session_prefs():
-    p = session['prefs']
-    if isinstance(u, dict):
-        p = Preferences(hide_completed=p['mcm_hide_completed'])
-    return p
-
 @mc_challenge_mgr.route("/")
 def index():
     if 'user' in session:
@@ -89,7 +63,7 @@ def index():
         if ch is None:
             ch = load_challenges(mc_challenge_mgr, user, map)
         if 'prefs' not in session:
-            session['prefs'] = load_preferences(mc_challenge_mgr, user)
+            session['prefs'] = make_session_prefs(load_preferences(mc_challenge_mgr, user))
     else:
         ch = None
     return render_template('index.jhtml', version=version, challenges=ch, available_maps=avail_maps)
@@ -123,7 +97,7 @@ def store():
             if len(data) > challenges.count:
                 data = data[:challenges.count]
             fades = challenges.update(data)
-            with mc_challenge_mgr.open_instance_resource(usr.challenge_file[mapname], "w") as f:
+            with mc_challenge_mgr.open_instance_resource(user.challenge_file[mapname], "w") as f:
                 challenges.save(f)
 
             fades.insert(0, str(len([ c for c in challenges if c.completed ])))
@@ -165,7 +139,7 @@ def login():
         elif not login_user(user, False):
             flash("login failed")
         else:
-            return login_successful(mc_challenge_mgr, user)
+            return login_successful(mc_challenge_mgr, make_session_user(user))
     return render_template('login.jhtml',version=version)
 
 @mc_challenge_mgr.route("/register", methods=['GET', 'POST'])
@@ -185,7 +159,7 @@ def register():
         if not login_user(user):
             flash("login failed")
             return redirect(url_for("register"))
-        return login_successful(mc_challenge_mgr, user)
+        return login_successful(mc_challenge_mgr, make_session_user(user))
     else:
         print version
         return render_template('register.jhtml', version=version)

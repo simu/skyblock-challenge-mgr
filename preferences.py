@@ -21,6 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import pickle
+from flask import session
 
 class Preferences(object):
     def __init__(self, hide_completed=False):
@@ -32,6 +33,9 @@ class Preferences(object):
     def __repr__(self):
         return "Preferences(hide_completed={0})".format(self.hide_completed)
 
+def make_session_prefs(prefs):
+    return { 'mcm_hide_completed': prefs.hide_completed }
+
 def load_preferences(app, user):
     prefs = None
     try:
@@ -41,4 +45,8 @@ def load_preferences(app, user):
         pass
     if not prefs:
         prefs = Preferences()
-    return prefs
+    return make_session_prefs(prefs)
+
+def get_session_prefs():
+    p = session['prefs']
+    return Preferences(hide_completed=p['mcm_hide_completed'])

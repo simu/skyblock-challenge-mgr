@@ -2,7 +2,8 @@
 
 {% set site = "" %}
 {% if session.logged_in %}
-{% set hide_completed = session['prefs'].hide_completed %}
+{% set user = session['user']['mcm_user_name'] %}
+{% set hide_completed = session['prefs']['hide_completed'] %}
 {% endif %}
 
 {% block js %}
@@ -12,7 +13,7 @@
 
 {% block nav %}
 {% if session.logged_in %}
-Logged in as <span class="emph" id="username">{{ session.user.name }}</span>
+Logged in as <span class="emph" id="username">{{ user }}</span>
 <a href="#" onclick="javascript:toggle_prefs()">Preferences</a>&nbsp;<a href="{{ url_for("logout") }}">Logout</a>
 {% else %}
 <a href="{{ url_for("login") }}">Login</a>&nbsp;<a href="{{ url_for("register") }}">Register</a>
